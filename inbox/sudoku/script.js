@@ -1,12 +1,17 @@
-const task1 = [[".","4",".","1","3","8","9","5","7"],
-			["7","3","1",".","9","5","6",".","8"],
-			["8",".",".","7",".","4",".","1","2"],
-			["2","5",".",".","4",".","8","7","."],
-			["4","1","9","8",".","7",".",".","6"],
-			["3",".","7","5","1","6","4",".","9"],
-			["9",".",".","4","7",".",".","6","5"],
-			["5","7","3","6",".",".","2","9","."],
-			[".","6","4","9","5","2","7","8","."]];
+window.addEventListener(('DOMContentLoaded'), () => {
+
+	const task1 = [["","4","","1","3","8","9","5","7"],
+			   ["7","3","1","","9","5","6","","8"],
+			   ["8","","","7","","4","","1","2"],
+			   ["2","5","","","4","","8","7",""],
+			   ["4","1","9","8","","7","","","6"],
+			   ["3","","7","5","1","6","4","","9"],
+			   ["9","","","4","7","","","6","5"],
+			   ["5","7","3","6","","","2","9",""],
+			   ["","6","4","9","5","2","7","8",""]];
+
+			  
+
 
 const task2 = [[".","5",".","1",".",".",".",".","8"],
 			["2","3",".","6","7",".",".",".","5"],
@@ -18,24 +23,30 @@ const task2 = [[".","5",".","1",".",".",".",".","8"],
 			[".",".","5",".",".","7","8",".","2"],
 			["1",".",".","9","6",".","4",".","."]];
 
-for (let i = 0; i < 20; i++) {
-	sudoku(task2);
-}
+const task3 = [["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]];
 
-console.log("task", task2);	
+// for (let i = 0; i < 20; i++) {
+// 	sudoku(task1);
+// }
+
+// console.log("task", task1);	
 
 
 
 
 
-function sudoku(board){
+function sudokuSolver(board){
 	const numbers = new Set(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
 	const rows = getRows(board);
 	const cols = getCols(board);
-	const areas = getAreas(board);
+	// const areas = getAreas(board);
+
+	// console.log(areas);
+
+
 	for (let i = 0; i < 9; i++) {
 		for (let j = 0; j < 9; j++) {
-			if(getValue(i, j) != undefined && board[i][j] === '.'){
+			if(getValue(i, j) != undefined && board[i][j] === ''){
 				board[i][j] = getValue(i, j);
 			}
 		}		
@@ -73,40 +84,8 @@ function sudoku(board){
 			arr.push(e);
 		});
 		if(num.size === 1)  return arr[0];
+		
 	}
-
-
-
-
-
-
-
-
-	// function oneValue(zone) {
-	// 	for (let i = 0; i < zone.length; i++) {
-	// 		// console.log(zone[i])
-	// 		for (let j = 0; j < zone[i].length; j++) {
-	// 			if(45 - getSumZone(zone[i]) <= 9) {
-	// 				zone[i][j] = 45 - getSumZone(zone[i]);
-	// 			}
-	// 		}
-	// 	}
-	// }
-	
-	
-	
-	
-	
-	
-	function getSumZone(zone){
-		let sum = 0;
-		zone.forEach(element => {
-			sum += +element;
-		});
-		return sum;
-	}
-
-	
 	
 	function getRows(x){
 		const rowMain = [];
@@ -131,23 +110,16 @@ function sudoku(board){
 		}
 		return colMain;
 	}
-	function getAreas(x){
-		const areaMain = [];
-		for (let i = 0; i < x.length; i++) {  
-			for (let j = 0; j < x[i].length; j++) {
-				if((i - 1) % 3 === 0 && (j - 1) % 3 === 0) {
-					const area = [];
-					for (let k = 0; k < 3; k++) {
-						for (let l = 0; l < 3; l++) {
-							area.push(x[i-1+k][j-1+l]);                       
-						}                
-					}
-					areaMain.push(area);
-				}
-			}
-		}
-		return areaMain;
-	}
+	// function getAreas(x){
+	// 	const areaMain = [];
+	// 	for (let i = 0; i < 9; i++) {
+	// 		for (let j = 0; j < 9; j++){
+	// 			areaMain.push(x[(i%3)*3+j%3][Math.floor(i/3)*3+Math.floor(j/3)]);
+	// 		}
+	// 		console.log(areaMain);
+	// 	}
+	// 	return areaMain;
+	// }
 
 }
 
@@ -166,54 +138,45 @@ function sudoku(board){
 //         ["9",".",".","4","7",".",".","6","5"],
 //         ["5","7","3","6",".",".","2","9","."],
 //         [".","6","4","9","5","2","7","8","."]]);
+	const sudoku = document.querySelector('.sudoku');
+
+	function addItems() {
+		for (let i = 0; i < 81; i++) {       
+			const item = document.createElement('div');
+			item.classList.add('item');
+			sudoku.append(item);
+		}
+	}
+	addItems();
+	const items = document.querySelectorAll('.item');
+	
+	function getTask() {
+		let arr = [];
+		for (let i = 0; i < 9; i++) {
+			task1[i].forEach(e => {
+				arr.push(e);
+			});		
+		}
+		for (let i = 0; i < items.length; i++) {
+			items[i].innerHTML = arr[i];
+		}
+	}
+
+	getTask();
+
+	const btn = document.querySelector('.solver');
+
+	btn.addEventListener('click', () => {
+		for (let i = 0; i < 10; i++) {
+			sudokuSolver(task1);
+			
+		}
+		getTask();
+	});
+});
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// function getArrays(x){
-		// 	const colMain = [];
-		// 	const areaMain = [];
-		
-		// 	for (let i = 0; i < x.length; i++) {  
-		// 		const row = [];
-		// 		const col = [];
-		// 		for (let j = 0; j < x[i].length; j++) {
-		// 			row.push(x[i][j]);
-		// 			col.push(x[j][i]);
-		// 			if((i - 1) % 3 === 0 && (j - 1) % 3 === 0) {
-		// 				const area = [];
-		// 				for (let k = 0; k < 3; k++) {
-		// 					for (let l = 0; l < 3; l++) {
-		// 						area.push(x[i-1+k][j-1+l]);                       
-		// 					}                
-		// 				}
-		// 				areaMain.push(area);
-		// 			}
-		// 		}
-		// 		rowMain.push(row);
-		// 		colMain.push(col);
-		// 	}
-		
-		// 	return rowMain, colMain, areaMain;
-		// }
