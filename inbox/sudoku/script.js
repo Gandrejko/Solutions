@@ -63,6 +63,8 @@ function sudokuSolver(board){
 		const num = new Set(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
 		const area = areas[posArea];
 		const arr = [];
+		const arrMain = [];
+		const counters = {};
 		area.forEach(e => {
 			e.forEach(elem => {
 				if(num.has(elem)){
@@ -73,10 +75,55 @@ function sudokuSolver(board){
 		num.forEach(e => {
 			arr.push(e);
 		});
-		console.log(arr);
+		area.forEach((e, i) => {
+			e.forEach((elem, j) => {
+				console.log(i, j)
+				if(elem === "."){
+					arrMain.push(getDiffValue(i+Math.floor(posArea/3)*3,j+Math.floor(posArea%3)*3));
+				}
+			})			
+		});
+		arrMain.forEach(elem => {
+			elem.forEach(e => {
+				const counter = +e;
+				let count = counters[counter] || 0;
+				counters[counter] = count + 1;
+			});
+		});
+		// console.log(arrMain);
+
+		const result = Object.entries(counters);
+		// console.log(result);
+		let numResult = '.';
+		result.forEach(e => {
+			if(e[1] == 8) numResult = e[0];
+		});
+		return numResult;
 	}
 
-	getValuesInArea(0);
+	console.log(getValuesInArea(4));
+
+	function getDiffValue(posRow, posCol) {
+		const num = new Set();
+		const row = rows[posRow];
+		const col = cols[posCol];
+		const arr = [];
+		row.forEach(e => {
+			if(!num.has(e) && e !== "."){
+				num.add(e);
+			}
+		});
+		col.forEach(e => {
+			if(!num.has(e) && e !== "."){
+				num.add(e);
+			}
+		});
+
+		num.forEach(e => {
+			arr.push(e);
+		});
+		return arr;
+	}
 	
 	
 	function getValue(posRow, posCol) {
