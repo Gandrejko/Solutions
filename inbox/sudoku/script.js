@@ -65,6 +65,7 @@ function sudokuSolver(board){
 		const arr = [];
 		const arrMain = [];
 		const counters = {};
+		const cells = [];
 		area.forEach(e => {
 			e.forEach(elem => {
 				if(num.has(elem)){
@@ -75,22 +76,27 @@ function sudokuSolver(board){
 		num.forEach(e => {
 			arr.push(e);
 		});
+		console.log("arr", arr);	
 		area.forEach((e, i) => {
 			e.forEach((elem, j) => {
-				console.log(i, j)
+				// console.log(i, j);
 				if(elem === "."){
 					arrMain.push(getDiffValue(i+Math.floor(posArea/3)*3,j+Math.floor(posArea%3)*3));
 				}
 			})			
 		});
-		arrMain.forEach(elem => {
+		arrMain.forEach((elem, i) => {
 			elem.forEach(e => {
 				const counter = +e;
 				let count = counters[counter] || 0;
 				counters[counter] = count + 1;
 			});
+			console.log(elem, i+1);
+			// elem.forEach(e => {
+
+			// });
 		});
-		// console.log(arrMain);
+		console.log(arrMain);
 
 		const result = Object.entries(counters);
 		// console.log(result);
