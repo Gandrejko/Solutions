@@ -56,20 +56,12 @@ const task4 = [
 	["", "", "", "2", "7", "5", "9", "", ""]
 ];
 
-function getRows(x) {
-	return JSON.parse(JSON.stringify(x));
-}
-
-function getCols(x) {
-	const colMain = [];
-	for (let i = 0; i < x.length; i++) {
-		const col = [];
-		for (let j = 0; j < x[i].length; j++) {
-			col.push(x[j][i]);
-		}
-		colMain.push(col);
+function getCol(posCol, board) {
+	const col = [];
+	for(let i=0; i< board.length; i++){
+		col.push(board[i][posCol]); //Get column from board
 	}
-	return colMain;
+	return col;
 }
 
 function fillSquare(board, startI, startJ) {
@@ -81,108 +73,84 @@ function fillSquare(board, startI, startJ) {
 		}
 		area.push(...areaRow);
 	}
-
 	return area;
 }
 
-function getAreas(board) {
-	const areaMain = [];
-	for (let i = 0; i < 9; i += 3) {
-		for (let j = 0; j < 9; j += 3) {
-			areaMain.push(fillSquare(board, i, j));
-		}
-	}
-	return areaMain;
-}
 
-function getValue(posRow, posCol, rows, cols, areas, board) {
+
+function getValue(posRow, posCol, board) {
 	const num = new Set(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
 	const numDiff = new Set();
-	const row = rows[posRow];
-	const col = cols[posCol];
-	const area = areas[Math.floor(posRow / 3) * 3 + Math.floor(posCol / 3)];
+	const row = board[posRow]; //Get row from board
+	const col = getCol(posCol, board); //Get column from board
+	const area = fillSquare(board, Math.floor(posRow / 3) * 3, Math.floor(posCol / 3) * 3); //Get area from board
 
-		row
-		.concat(col)
-		.concat(area)
-		.forEach((e) => {
-			num.delete(e);
-			if(e !== '') numDiff.add(e);
-		});
-	
-
-	if (num.size === 1) return [...num][0];
-
-	return '';
+	row
+	.concat(col)
+	.concat(area)
+	.forEach((e) => {
+		num.delete(e);
+		numDiff.add(e);
+	});
+	return [[...num], [...numDiff]];
 }
 
 
-// function getDiffValue(posRow, posCol, rows, cols, areas) {
-// 	const row = rows[posRow];
-// 	const col = cols[posCol];
-// 	const area = areas[Math.floor(posRow / 3) * 3 + Math.floor(posCol / 3)];
-// 	const array = [];
-// 	const result = [];
-// 	for (let i = 0; i < 9; i++) {
-// 		array.push([i, []]);
-// 		result.push([i+1, 0]);
-// 	}
-// 	for (let i = 0; i < 9; i++) {
-// 		if (row[i] === '') {
-// 			array[i][1] = array[i][1].concat(areas[Math.floor(i / 3) * 3 + Math.floor(i / 3)]).filter(item => item != '');
-// 			array[i][1] = array[i][1].concat(row).filter(item => item != '');
-// 			for (let j = 0; j < 9; j++) {
-// 				if (!array[i][1].includes(rows[j][i]) && rows[j][i] !== '') {
-// 					array[i][1].push(rows[j][i])
-// 				};
-// 				if (!array[i][1].includes(cols[i][j]) && cols[i][j] !== '') {
-// 					array[i][1].push(cols[i][j]);
-// 				};
-// 			}			
-// 		}		
-// 	}
+function findDiffValueRow(posRow, board) {
+	const row = board[posRow];
+	const resRow = [];
+	let result = 0;
+	let index = 0;
 
-// 	for (let i = 0; i < 9; i++) {
-// 		for (let j = 1; j <= 9; j++) {
-// 			if(array[i][1].includes(j.toString())) {
-// 				result[i][1] += 1;
-// 			}
-// 		}
-// 	}
-
-
-
-
-
-
-
-
-// 	return result;
-// }
-
-
-function getDiffValue(posRow, posCol, rows, cols, areas, board) {
-	const numDiff = new Set();
-	const row = rows[posRow];
-	const col = cols[posCol];
-	const area = areas[Math.floor(posRow / 3) * 3 + Math.floor(posCol / 3)];
-
-	if(board[posRow][posCol] === '') {
-		row
-		.concat(col)
-		.concat(area)
-		.forEach((e) => {
-			if(e !== '') numDiff.add(e);
-		});
-		// console.log(numDiff, posRow, posCol);
+	for (let i = 0; i < row.length; i++) {
+		const element = [i];
+		if(row[i] === '') {
+			element[1] = getValue(posRow, i, board)[1].filter(Boolean);
+		} else{
+			element[1] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+		}
+		resRow.push(element);
 	}
-	
 
+	for (let i = 1; i < resRow.length + 1; i++) {
+		let element = 9;
+		const arr = [];
+		for (let j = 0; j < 9; j++) {
+			if(!resRow[j][1].includes((i).toString())) arr.push(j);		
+		}
+		if(arr.length === 1) {
+			result = i;	
+			index = arr[0];		
+		}
+	}
 
-	return numDiff;
+	return [result, index];
 }
 
 
+
+
+
+function sudokuSolver(board) {
+	for (let i = 0; i < 9; i++) {
+		for (let j = 0; j < 9; j++) {
+			const res = getValue(i, j, board);
+			if (board[i][j] === "" && res[0].length === 1) {
+				board[i][j] = res[0][0];
+			}
+		}
+		const resDiffRow = findDiffValueRow(i, board);
+		if(resDiffRow[0] !== 0) {
+			board[i][resDiffRow[1]] = resDiffRow[0];
+		}
+	}
+}
+
+
+
+// ================================
+
+// UI
 
 
 function getTask(task) {
@@ -197,40 +165,36 @@ function getTask(task) {
 
 function addItems() {
 	const sudoku = document.querySelector(".sudoku");
-
 	sudoku.innerHTML = '<div class="item"></div>'.repeat(81);
 }
 
-function sudokuSolver(board) {
-	const rows = getRows(board);
-	const cols = getCols(board);
-	const areas = getAreas(board);
-	const diffValues = [];
 
-	for (let i = 0; i < 9; i++) {
-		for (let j = 0; j < 9; j++) {
-			const res = getValue(i, j, rows, cols, areas, board);
-			if (board[i][j] === "") {
-				board[i][j] = res;
-				diffValues.push([[...getDiffValue(i, j, rows, cols, areas, board)], i, j]);
-			}
-		}
-	}
-	console.log(diffValues);
-
-}
 
 window.addEventListener("DOMContentLoaded", () => {
 	const task = task4;
+	const btn = document.querySelector(".solver");
 
 	addItems();
-
 	getTask(task);
-
-	const btn = document.querySelector(".solver");
 
 	btn.addEventListener("click", () => {
 		sudokuSolver(task);
 		getTask(task);
 	});
 });
+
+
+// function getDiffValue(posRow, posCol, board) {
+// 	const numDiff = new Set();
+// 	const row = board[posRow]; //Get row from board
+// 	const col = getCol(posCol, board); //Get column from board
+// 	const area = fillSquare(board, Math.floor(posRow / 3) * 3, Math.floor(posCol / 3) * 3); //Get area from board
+
+// 	row
+// 	.concat(col)
+// 	.concat(area)
+// 	.forEach((e) => {
+// 		numDiff.add(e);
+// 	});	
+// 	return [...numDiff];
+// }
