@@ -1,25 +1,3 @@
-// 1. do not keep everything in a single callback; keep data separate from methods;
-// 2. do not keep rarely used or unused code in comments, wrap blocks in if with a flag and change the value of flag
-// 3. do not use implicit data dependenies in these functions
-// 4. use descriptive variable names and arguments
-// 5. do not mutate state throughout execution
-// 6. calculate col, row, area from board
-
-// 81 * 81 * 27
-let DEBUG = false;
-
-const defaultTask = [
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["", "", "", "", "", "", "", "", ""]
-];
-
 const task1 = [
 	["", "4", "", "1", "3", "8", "9", "5", "7"],
 	["7", "3", "1", "", "9", "5", "6", "", "8"],
@@ -31,115 +9,6 @@ const task1 = [
 	["5", "7", "3", "6", "", "", "2", "9", ""],
 	["", "6", "4", "9", "5", "2", "7", "8", ""],
 ];
-
-const task2 = [
-	["", "5", "", "1", "", "", "", "", "8"],
-	["2", "3", "", "6", "7", "", "", "", "5"],
-	["", "4", "1", "", "", "3", "7", "6", ""],
-	["", "", "7", "", "", "9", "", "", "1"],
-	["5", "1", "8", "3", "", "", "", "9", ""],
-	["", "9", "", "7", "1", "", "5", "8", ""],
-	["3", "", "", "", "", "1", "", "5", ""],
-	["", "", "5", "", "", "7", "8", "", "2"],
-	["1", "", "", "9", "6", "", "4", "", ""],
-];
-
-const task3 = [
-	["5", "3", "", "", "7", "", "", "", ""],
-	["6", "", "", "1", "9", "5", "", "", ""],
-	["", "9", "8", "", "", "", "", "6", ""],
-	["8", "", "", "", "6", "", "", "", "3"],
-	["4", "", "", "8", "", "3", "", "", "1"],
-	["7", "", "", "", "2", "", "", "", "6"],
-	["", "6", "", "", "", "", "2", "8", ""],
-	["", "", "", "4", "1", "9", "", "", "5"],
-	["", "", "", "", "8", "", "", "7", "9"],
-];
-
-const task4 = [
-	["", "", "9", "7", "4", "8", "", "", ""],
-	["7", "", "", "", "", "", "", "", ""],
-	["", "2", "", "1", "", "9", "", "", ""],
-	["", "", "7", "", "", "", "2", "4", ""],
-	["", "6", "4", "", "1", "", "5", "9", ""],
-	["", "9", "8", "", "", "", "3", "", ""],
-	["", "", "", "8", "", "3", "", "2", ""],
-	["", "", "", "", "", "", "", "", "6"],
-	["", "", "", "2", "7", "5", "9", "", ""]
-];
-
-const task5 = [
-	["5", "", "", "", "3", "", "", "", ""],
-	["", "", "", "", "", "", "", "4", "1"],
-	["", "", "", "1", "", "4", "7", "", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["6", "", "", "", "", "", "5", "", ""],
-	["", "", "", "8", "", "", "", "", ""],
-	["", "8", "", "2", "", "7", "", "", ""],
-	["", "", "", "", "6", "", "3", "9", ""],
-	["", "1", "", "", "", "", "", "", ""]
-];
-
-const task6 = [
-	["9", "", "", "5", "", "8", "", "4", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["6", "4", "", "", "9", "7", "", "", "5"],
-	["8", "", "6", "4", "", "", "5", "9", ""],
-	["", "", "", "", "", "", "", "", ""],
-	["7", "", "", "", "", "", "", "6", "4"],
-	["", "6", "5", "", "4", "2", "7", "3", ""],
-	["", "", "9", "", "7", "", "", "5", "6"],
-	["", "8", "", "6", "", "5", "4", "", ""]
-];
-
-const task7 = [
-	["", "", "5", "", "", "", "", "", ""],
-	["", "7", "", "9", "", "", "", "6", ""],
-	["9", "", "2", "", "1", "", "", "7", ""],
-	["5", "", "", "6", "", "2", "4", "", ""],
-	["", "4", "", "", "3", "", "", "", "2"],
-	["", "2", "", "", "", "", "3", "1", ""],
-	["", "9", "6", "1", "", "", "", "", ""],
-	["2", "", "", "", "9", "", "", "", ""],
-	["", "", "3", "2", "", "4", "6", "", "1"]
-];
-
-const task8 = [
-	["", "9", "4", "", "", "", "5", "", "7"],
-	["", "7", "", "", "8", "", "", "", ""],
-	["", "", "6", "", "", "4", "1", "2", ""],
-	["", "", "1", "", "", "", "", "", "2"],
-	["", "", "", "8", "6", "", "9", "7", ""],
-	["", "6", "", "2", "", "7", "", "", ""],
-	["2", "3", "", "4", "1", "8", "7", "", "6"],
-	["6", "4", "", "7", "", "5", "3", "1", "9"],
-	["5", "1", "", "", "9", "", "", "", ""]
-];
-
-const task9 = [
-	["", "7", "", "9", "", "1", "", "", ""],
-	["", "", "9", "", "", "", "", "", ""],
-	["", "", "1", "", "", "4", "", "", "2"],
-	["5", "", "", "", "", "", "7", "", ""],
-	["7", "", "8", "", "", "", "2", "", ""],
-	["", "", "", "", "", "", "1", "9", "4"],
-	["", "", "", "7", "", "", "", "", "6"],
-	["", "", "", "", "2", "", "", "4", ""],
-	["3", "6", "", "", "8", "", "", "", ""]
-];
-
-const task10 = [
-	["9", "", "", "", "", "5", "1", "", ""],
-	["", "", "5", "4", "", "", "8", "", ""],
-	["", "4", "7", "", "", "", "", "", ""],
-	["8", "", "", "", "", "3", "", "", "6"],
-	["7", "6", "", "9", "", "", "", "", "2"],
-	["", "", "", "", "", "4", "", "", "7"],
-	["", "", "", "", "", "", "", "", ""],
-	["6", "", "", "", "", "9", "3", "", ""],
-	["5", "", "", "", "2", "", "", "", "8"]
-];
-
 function getCol(posCol, board) {
 	const col = [];
 	for(let i=0; i< board.length; i++){
@@ -159,6 +28,8 @@ function fillSquare(board, startI, startJ) {
 	}
 	return area;
 }
+
+// console.log(fillSquare(getTask(), startI, startJ))
 
 
 
@@ -280,6 +151,7 @@ function sudokuSolver(board) {
 }
 
 
+
 // ================================
 
 // Recursion
@@ -368,16 +240,32 @@ const solveRecursion = function(board) {
 // UI
 
 
-function getTask(task) {
+function getTask() {
 	const items = document.querySelectorAll(".item");
-
-	let arr = task.flat();
+	const task = [];
+	const arr = [];
 
 	for (let i = 0; i < items.length; i++) {
-		items[i].innerHTML = `<div class="solution">${arr[i]}</div>`;
-		if(arr[i] === '') items[i].classList.add('empty');
+		arr.push(items[i].value);
+		if(arr.length === 9) {
+			task.push([...arr]);
+			arr.splice(0, arr.length);
+		}
 	}
+
+	return task;
 }
+
+function fillBoard(board) {
+	const items = document.querySelectorAll(".item");
+	let arr = board.flat();
+
+	for (let i = 0; i < items.length; i++) {
+		items[i].value = arr[i];
+	}
+	
+}
+
 
 function getUselessNumbers(task) {
 	const result = [];
@@ -394,49 +282,43 @@ function getUselessNumbers(task) {
 }
 
 
-function deleteUselessNumbers(task) {
-	const items = document.querySelectorAll(".item");
-	const result = getUselessNumbers(task);
+// function deleteUselessNumbers(task) {
+// 	const items = document.querySelectorAll(".item");
+// 	const result = getUselessNumbers(task);
 	
 
-	for (let i = 0; i < result.length; i++) {
-		for (let j = 1; j <= 9; j++) {
-			if(result[i].includes(j.toString())) items[i].innerHTML += `<div class="value">${j}</div>`;
-			else items[i].innerHTML += `<div class="value"></div>`;
-		}
-	}
-}
-
-function colorizeValue(number, color) {
-	const values = document.querySelectorAll('.value');
-
-	values.forEach(e => {
-		if(e. innerHTML == number) {
-			e.classList.add('color');
-			e.style.background = color;
-		}
-	});
-}
+// 	for (let i = 0; i < result.length; i++) {
+// 		for (let j = 1; j <= 9; j++) {
+// 			if(result[i].includes(j.toString())) items[i].innerHTML += `<div class="value">${j}</div>`;
+// 			else items[i].innerHTML += `<div class="value"></div>`;
+// 		}
+// 	}
+// }
 
 
 function addItems() {
 	const sudoku = document.querySelector(".sudoku");
-	sudoku.innerHTML = '<div class="item"></div>'.repeat(81);
+	sudoku.innerHTML = '<input type="text" maxlength="1" class="item"></input>'.repeat(81);
 }
 
 
 
 window.addEventListener("DOMContentLoaded", () => {
-	const task = task4;
 	const btn = document.querySelector(".solver");
+	addItems();	
+	const getBoard = localStorage.getItem('board');
+    console.log("getBoard", getBoard);
+	const task = getTask();
 
-	addItems();
-	getTask(task);
-	deleteUselessNumbers(task);
+	fillBoard(task);
+	localStorage.setItem('board', JSON.stringify(task));		
+
+	// deleteUselessNumbers(task);
 
 	btn.addEventListener("click", () => {
+		const task = getTask();
 		sudokuSolver(task);
-		getTask(task);
-		deleteUselessNumbers(task);
+		fillBoard(task);
+		// deleteUselessNumbers(task);
 	});
 });
