@@ -1,9 +1,6 @@
-// 1. do not keep everything in a single callback; keep data separate from methods;
-// 2. do not keep rarely used or unused code in comments, wrap blocks in if with a flag and change the value of flag
-// 3. do not use implicit data dependenies in these functions
-// 4. use descriptive variable names and arguments
-// 5. do not mutate state throughout execution
-// 6. calculate col, row, area from board
+// 1. homogenous array (use -1 instead of '')
+// 2. naming
+// 3. use numbers everywhere
 
 // 81 * 81 * 27
 let DEBUG = false;
@@ -160,11 +157,8 @@ function fillSquare(board, startI, startJ) {
 	return area;
 }
 
-
-
-function getValue(posRow, posCol, board) {
-	const num = new Set(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
-	const numDiff = new Set();
+// rename
+function fillArrayGeneric(posRow, posCol, board, callback) {
 	const row = board[posRow]; //Get row from board
 	const col = getCol(posCol, board); //Get column from board
 	const area = fillSquare(board, Math.floor(posRow / 3) * 3, Math.floor(posCol / 3) * 3); //Get area from board
@@ -172,28 +166,37 @@ function getValue(posRow, posCol, board) {
 	row
 	.concat(col)
 	.concat(area)
-	.forEach((e) => {
-		num.delete(e);
-		numDiff.add(e);
-	});
-	return [[...num], [...numDiff]];
-}
+	.forEach(callback);
+} 
 
+function getPossibleValues(posRow, posCol, board) {
+	const num = new Set(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+	fillArrayGeneric(posRow, posCol, board, (e) => num.delete(e))
 
-function findDiffValueRow(posRow, board) {
+	return [...num]
+} 
+
+function getImpossibleValues(posRow, posCol, board) {
+	const numDiff = new Set();
+	fillArrayGeneric(posRow, posCol, board, (e) => numDiff.add(e))
+	
+	return [...numDiff]
+} 
+
+function findValueByExclusionInRow(posRow, board) {
 	const row = board[posRow];
 	const resRow = [];
 	let result = 0;
-	let index = 0;
+	let index = -1;
 
 	for (let i = 0; i < row.length; i++) {
-		const element = [i];
+		const posAndImpossibleValues = [i, []];
 		if(row[i] === '') {
-			element[1] = getValue(posRow, i, board)[1].filter(Boolean);
+			posAndImpossibleValues[1] = getImpossibleValues(posRow, i, board).filter(Boolean);
 		} else{
-			element[1] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+			posAndImpossibleValues[1] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 		}
-		resRow.push(element);
+		resRow.push(posAndImpossibleValues);
 	}
 
 	for (let i = 1; i < resRow.length + 1; i++) {
@@ -210,16 +213,16 @@ function findDiffValueRow(posRow, board) {
 	return [result, index];
 }
 
-function findDiffValueCol(posCol, board) {
+function findValueByExclusionInCol(posCol, board) {
 	const col = getCol(posCol, board);
 	const resCol = [];
 	let result = 0;
-	let index = 0;
+	let index = -1;
 
 	for (let i = 0; i < col.length; i++) {
 		const element = [i];
 		if(col[i] === '') {
-			element[1] = getValue(i, posCol, board)[1].filter(Boolean);
+			element[1] = getImpossibleValues(i, posCol, board).filter(Boolean);
 		} else{
 			element[1] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 		}
@@ -240,33 +243,27 @@ function findDiffValueCol(posCol, board) {
 	return [result, index];
 }
 
-
-
-
-
-
-
 function sudokuSolver(board) {
 	let isChange = false;
 	for (let i = 0; i < 9; i++) {
 		for (let j = 0; j < 9; j++) {
-			const res = getValue(i, j, board);
-			if (board[i][j] === "" && res[0].length === 1) {
-				board[i][j] = res[0][0];
+			const res = getPossibleValues(i, j, board);
+			if (board[i][j] === "" && res.length === 1) {
+				board[i][j] = res[0];
 				isChange = true;
 			}
 			if(i === 8) {
-				const resDiffCol = findDiffValueCol(j, board);
-				if(resDiffCol[1] !== 0) {
-					board[resDiffCol[1]][j] = resDiffCol[0];
+				const [value, indexInRow] = findValueByExclusionInCol(j, board);
+				if(indexInRow !== 0) {
+					board[indexInRow][j] = value;
 					isChange = true;
 				}
 			}			
 		}
-		const resDiffRow = findDiffValueRow(i, board);
+		const [value, indexInRow] = findValueByExclusionInRow(i, board);
 		
-		if(resDiffRow[1] !== 0) {
-			board[i][resDiffRow[1]] = resDiffRow[0];
+		if(indexInRow !== -1) {
+			board[i][indexInRow] = value;
 			isChange = true;
 		}		
 	}
@@ -384,7 +381,7 @@ function getUselessNumbers(task) {
 	for (let i = 0; i < task.length; i++) {
 		for (let j = 0; j < task[i].length; j++) {
 			if(task[i][j] === '') {
-				result.push(getValue(i, j, task)[0].filter(x => x != ''));
+				result.push(getPossibleValues(i, j, task).filter(x => x != ''));
 			} else {
 				result.push('');
 			}
