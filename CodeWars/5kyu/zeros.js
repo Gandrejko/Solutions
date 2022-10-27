@@ -16,7 +16,8 @@
 
 
 function zeros(n) {
-    return Math.floor(n / 5) >= 5 ? Math.floor(n / 5) + zeros(Math.floor(n / 5)) : Math.floor(n / 5)
+    const elem = Math.floor(n / 5);
+    return elem >= 5 ? elem + zeros(elem) : elem
 }
 
 for (let i = 1; i <= 100; i++) {
